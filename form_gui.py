@@ -12,13 +12,6 @@ student_db = mysql.connector.connect(
 )
 
 my_cursor = student_db.cursor()
-'''
-Create the Students Table
-my_cursor.execute("CREATE TABLE students (name VARCHAR(255),
-                    rollno VARCHAR(255),
-                    gender VARCHAR(255), 
-                    grade VARCHAR(255))")   
-'''
 
 ### Create Root Window
 
@@ -49,12 +42,9 @@ def add_student():
         my_cursor.execute(sql, student_val)
         student_db.commit()
 
-        inline_frame = ttk.LabelFrame(list_frame)
-        inline_frame.grid(column=0, columnspan=4)
-        ttk.Label(inline_frame, text=roll_no.get(), font=24).grid(padx=4,column=0, row=0, columnspan=1)
-        ttk.Label(inline_frame, text=name.get(), font=24).grid(padx=4, column=1, row=0, columnspan=1)
-        ttk.Label(inline_frame, text=grade.get(), font=24).grid(padx=4, column=2, row=0, columnspan=1)
-        ttk.Label(inline_frame, text=gender.get(), font=24).grid(padx=4, column=3, row=0, columnspan=1)
+        for item in list_frame.winfo_children():
+                item.destroy()
+        create_list()
         entry_name.delete(0,END)
         entry_roll.delete(0,END)
 
@@ -77,7 +67,6 @@ def del_student():
                 item.destroy()
             create_list()
             break
-
         else:
             messagebox.showerror(title="Error", message="No Student with roll no " + delroll.get())
 
