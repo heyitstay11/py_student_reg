@@ -22,6 +22,8 @@ tab1 = ttk.Frame(tabControl)
 tabControl.add(tab1, text="Form")
 tab2 = ttk.Frame(tabControl)
 tabControl.add(tab2, text="List")
+tab3 = ttk.Frame(tabControl)
+tabControl.add(tab3, text="Update")
 tabControl.pack(expand=1, fill="both")
 
 ###
@@ -97,8 +99,8 @@ radio_male = tk.Radiobutton(form_frame, text="Male", font=10, variable=gender, v
 radio_male.grid(column=0, row=4, padx=4, pady=2)
 radio_female = tk.Radiobutton(form_frame, text="Female",font=10, variable=gender, value="F")
 radio_female.grid(column=1, row=4, sticky="W")
-radio_male = tk.Radiobutton(form_frame, text="Others   ", font=10, variable=gender, value="O")
-radio_male.grid(column=2, row=4, sticky="W")
+radio_others = tk.Radiobutton(form_frame, text="Others   ", font=10, variable=gender, value="O")
+radio_others.grid(column=2, row=4, sticky="W")
 
 
 ttk.Label(form_frame, text="Select Grade", font=10).grid(column=0, row=5)
@@ -144,6 +146,92 @@ def create_list():
         ttk.Label(inline_frame, text=x[2], font=24).grid(padx=4, column=3, row=0, columnspan=1)
 
 ###
+def fill_details():
+     if not update_roll.get():
+         messagebox.showerror(title="Error", message="Enter valid roll no")
+     else:
+        check_student = "Select * from students where rollno = "+ update_roll.get()
+        my_cursor.execute(check_student)
+        
+        for x in my_cursor: 
+            print(x)
+            entry_name_new.delete(0,END)
+            entry_roll_new.delete(0, END)
+            entry_name_new.insert(0,x[0])
+            entry_roll_new.insert(0, x[1])
+            if x[2] == 'M':
+                radio_male_new.select()
+            elif x[2] == 'F':
+                radio_female_new.select()
+            else:
+                radio_others_new.select()
+            select_grade_new.set(x[3])
+            break
+        else:
+            messagebox.showerror(title="Error", message="No Student with roll no " + delroll.get())
+
+##### Update Student Frame
+update_frame = tk.LabelFrame(tab3)
+update_frame.grid(column=0, row=0, pady=2)
+ttk.Label(update_frame, text="Update Student info", font=24).grid(column=0, row=0, padx=2, pady=4)
+
+ttk.Label(update_frame, text="Enter Roll no to fill", font=10).grid(column=0, row=2)
+btn_fill = ttk.Button(update_frame, text="Fill Details", command=fill_details)
+btn_fill.grid(column=2,row=2, padx=4, pady=10)
+update_roll = tk.StringVar()
+entry_update = ttk.Entry(update_frame, width=20, textvariable=update_roll)
+entry_update.grid(column=1, row=2, sticky="W")
+
+## update form elements
+ttk.Label(update_frame, text="Enter name", font=10).grid(column=0, row=3, padx=4)
+name_new = tk.StringVar()
+entry_name_new = ttk.Entry(update_frame, width=20, textvariable=name_new)
+entry_name_new.grid(column=1, row=3, sticky="W")
+
+
+ttk.Label(update_frame, text="Enter Roll No.", font=10).grid(column=0, row=4, padx=4, pady=16)
+roll_no_new = tk.StringVar()
+entry_roll_new = ttk.Entry(update_frame, width=20, textvariable=roll_no_new)
+entry_roll_new.grid(column=1, row=4, sticky="W")
+
+
+ttk.Label(update_frame, text="Gender ", font=10).grid(column=0, row=5, padx=4)
+gender_new = tk.StringVar()
+radio_male_new = tk.Radiobutton(update_frame, text="Male", font=10, variable=gender_new, value="M")
+radio_male_new.grid(column=0, row=6, padx=4, pady=2)
+radio_female_new = tk.Radiobutton(update_frame, text="Female",font=10, variable=gender_new, value="F")
+radio_female_new.grid(column=1, row=6, sticky="W")
+radio_others_new = tk.Radiobutton(update_frame, text="Others   ", font=10, variable=gender_new, value="O")
+radio_others_new.grid(column=2, row=6, sticky="W")
+
+
+ttk.Label(update_frame, text="Select Grade", font=10).grid(column=0, row=7)
+grade_new = tk.StringVar()
+select_grade_new = ttk.Combobox(update_frame, width=16, textvariable=grade_new, state="readonly")
+select_grade_new['values'] = ('O', 'A', 'B', 'C')
+select_grade_new.grid(column=1, row=7)
+select_grade_new.current(0)
+
+def update_student():
+    check_student = "Select * from students where rollno = "+ roll_no_new.get()
+    my_cursor.execute(check_student)
+    
+    for _ in my_cursor: 
+        update_sql = "Update students SET name='"+name_new.get() + "', rollno='"+roll_no_new.get()+"', gender='"+gender_new.get()+"', grade='"+grade_new.get()+"' WHERE rollno="+roll_no_new.get()
+        my_cursor.execute(update_sql)
+        student_db.commit()
+        messagebox.showinfo(title="Update", message="Student with roll no " + roll_no_new.get() + " updated")
+        entry_update.delete(0,END)
+
+        for item in list_frame.winfo_children():
+            item.destroy()
+        create_list()
+    else:
+         messagebox.showerror(title="Error", message="No Student with roll no " + delroll.get())
+
+btn_update_new = tk.Button(update_frame, text="Update",font=16, command=update_student)
+btn_update_new.grid(column=1,row=8, pady=10, sticky="W")
+
 create_list()
 
 root.mainloop() # start application
