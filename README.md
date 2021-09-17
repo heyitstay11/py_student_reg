@@ -1,9 +1,13 @@
 # Python GUI Student Registration App
 
-Python 3.8
+### Python 3.8 and MySQL
+----
 
+![Form Tab](./form_frame.png)
 ---
 
-![Form Tab](./form.png)
+![Update Tab](./update_frame.png)
 ---
-![List Tab](./List.png)
+
+![List Tab](./list_frame.png)
+---
